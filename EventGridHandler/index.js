@@ -4,7 +4,8 @@ const { URL } = require("url");
 
 module.exports = function (context, eventGridEvent) {
 
-    const url = new URL("https://cvcloudevents.azurewebsites.net/api/CloudEventHandler?code=5z5tTGixS7/QHmI8QvFaIDqVjSLVex/fAZh75oYPQg9Lg8o3ShWEsw==&clientId=default");
+    // If using Azure Functions for the target, replace {key} with the access key and replace {app} with the function app name
+    const url = new URL("https://{app}.azurewebsites.net/api/CloudEventHandler?code={key}==&clientId=default");
 
     context.log("Forwarding " + eventGridEvent.id);
 
