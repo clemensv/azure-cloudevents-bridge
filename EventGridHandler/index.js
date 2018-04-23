@@ -1,7 +1,9 @@
 
+const http = require("http");
+const { URL } = require("url");
+
 module.exports = function (context, eventGridEvent) {
-    const http = require("http");
-    const { URL } = require("url");
+
     const url = new URL("https://cvcloudevents.azurewebsites.net/api/CloudEventHandler?code=5z5tTGixS7/QHmI8QvFaIDqVjSLVex/fAZh75oYPQg9Lg8o3ShWEsw==&clientId=default");
 
     context.log("Forwarding " + eventGridEvent.id);
@@ -22,7 +24,7 @@ module.exports = function (context, eventGridEvent) {
     var post_options = {
         host: url.host,
         port: url.port,
-        path: url.pathname,
+        path: url.pathname + '?' + url.searchParams,
         method: 'POST',
         headers: {
             'Content-Type': 'application/cloudevents+json',
@@ -32,13 +34,15 @@ module.exports = function (context, eventGridEvent) {
 
     context.log("CloudEvent: " + jsonCloudEvent);
 
-    const req = http.request(options, (res) => {
+    const req = http.request(post_options, (res) => {
         // success
+        context.log("Status: " + res.statusCode)
         context.done();
     });
 
     req.on('error', (e) => {
         // error
+        context.log("Status: " + e)
         context.done();
     });
 
