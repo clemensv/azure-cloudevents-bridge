@@ -13,11 +13,14 @@ module.exports = function (context, eventGridEvent) {
         eventID: eventGridEvent.id,
         eventTime: eventGridEvent.eventTime,
         eventType: eventGridEvent.eventType,
-        eventTypeVersion: eventGridEvent.dataVersion,
         cloudEventsVersion: "0.1",
         contentType: eventGridEvent.contentType,
         data: eventGridEvent.data,
         source: eventGridEvent.topic + '#' + eventGridEvent.subject
+    }
+
+    if (eventGridEvent.dataVersion && eventGridEvent.dataVersion.length > 0) {
+        cloudEvent.eventTypeVersion = eventGridEvent.dataVersion;
     }
 
     var jsonCloudEvent = JSON.stringify(cloudEvent);
