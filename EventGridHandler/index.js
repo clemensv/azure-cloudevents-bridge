@@ -10,7 +10,7 @@ module.exports = function (context, eventGridEvent) {
     
     const url = new URL(urls[p]);
 
-    context.log("Forwarding " + eventGridEvent.id);
+    context.log("Forwarding " + eventGridEvent.id + " to " + url);
 
     var cloudEvent = {
         eventID: eventGridEvent.id,

@@ -15,23 +15,25 @@ module.exports = function (context, req) {
                 var pic = resp.body.sizes.size.find(element => { 
                     return element.width >= 1024; 
                 }); 
+                context.log("Pic selected " + pic.source);
                 context.res = {
                     // status: 200, /* Defaults to 200 */
                     body: pic.source
                 };
                 context.done();
             }).catch(function(err){
+                context.log("Error " + err);
+
                 context.res = {
-                    status: 400,
-                    body: "Please pass a name on the query string or in the request body"
+                    status: 500
                 };
                 context.done();
             });       
         
     }).catch(function(err){ 
+        context.log("Error " + err);
         context.res = {
-            status: 400,
-            body: "Please pass a name on the query string or in the request body"
+            status: 400
         };
         context.done();
     });

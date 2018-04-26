@@ -20,6 +20,7 @@ module.exports = function(context, req) {
         status: 204
       };
     } else {
+      context.log("Error " + error);
       context.res = {
         status: 500,
         body: error
