@@ -4,14 +4,8 @@ const { URL } = require("url");
 
 module.exports = function (context, eventGridEvent) {
 
-    // If using Azure Functions for the target, replace {key} with the access key and replace {app} with the function app name
     var urls = JSON.parse(process.env["TARGET_URLS"]);
-    var p = Math.floor(Math.random() * Math.floor(urls.length));
     
-    const url = new URL(urls[p]);
-
-    context.log("Forwarding " + eventGridEvent.id + " to " + url);
-
     var cloudEvent = {
         eventID: eventGridEvent.id,
         eventTime: eventGridEvent.eventTime,
@@ -28,33 +22,47 @@ module.exports = function (context, eventGridEvent) {
 
     var jsonCloudEvent = JSON.stringify(cloudEvent);
 
-    var post_options = {
-        host: url.host,
-        port: url.port,
-        path: url.pathname + '?' + url.searchParams,
-        method: 'POST',
-        rejectUnauthorized: false,
-        headers: {
-            'Content-Type': 'application/cloudevents+json',
-            'Content-Length': Buffer.byteLength(jsonCloudEvent)
+    var nreq = urls.length;
+    var complete = function(e) {
+        if ( --nreq == 0) {
+            context.done(e);
         }
-    };
+    }
 
-    context.log("CloudEvent: " + jsonCloudEvent);
+    urls.forEach(u => {
+            
+        const url = new URL(u);
+        
+        context.log("Forwarding " + eventGridEvent.id + " to " + url);
 
-    const req = https.request(post_options, (res) => {
-        // success
-        context.log("Status: " + res.statusCode)
-        context.done();
-    });
+        var post_options = {
+            host: url.host,
+            port: url.port,
+            path: url.pathname + '?' + url.searchParams,
+            method: 'POST',
+            rejectUnauthorized: false,
+            headers: {
+                'Content-Type': 'application/cloudevents+json',
+                'Content-Length': Buffer.byteLength(jsonCloudEvent)
+            }
+        };
 
-    req.on('error', (e) => {
-        // error
-        context.log("Status: " + e)
-        context.done(e);
-    });
+        context.log("CloudEvent: " + jsonCloudEvent);
 
-    // write data to request body
-    req.write(jsonCloudEvent);
-    req.end();
+        const req = https.request(post_options, (res) => {
+            // success
+            context.log("Status: " + res.statusCode)
+            complete();
+        });
+
+        req.on('error', (e) => {
+            // error
+            context.log("Status: " + e)
+            complete(e);
+        });
+
+        // write data to request body
+        req.write(jsonCloudEvent);
+        req.end();
+    });    
 };
