@@ -3,6 +3,15 @@ var https = require("https");
 var url = require("url");
 
 module.exports = function(context, request) {
+
+  if ( request.method !== 'POST' ) {
+    context.res = {
+      status: 405
+    };
+    context.done();
+    return;
+  }
+
   var client = new Twitter({
     consumer_key: process.env["TWITTER_CONSUMER_KEY"],
     consumer_secret: process.env["TWITTER_CONSUMER_SECRET"],
@@ -15,10 +24,20 @@ module.exports = function(context, request) {
     "Event ID:" + request.body.eventID + "\n" +
     "Event Time:" + request.body.eventTime + "\n";
   
-  if (request.body.eventType == "Microsoft.Storage.BlobCreated") {
-    statusString = statusString + request.body.data.url;
+  if (request.body.eventType == "Microsoft.Storage.BlobCreated" || 
+      request.body.eventType == "aws.s3.object.created") {
 
-    https.get(url.parse(request.body.data.url), function(res) {
+        // we're assuming these are pics
+        var objurl = "";
+
+        if ( request.body.eventType == "Microsoft.Storage.BlobCreated") {
+          objurl = request.body.data.url;
+        } else { // aws case
+          objurl = "https://s3.amazonaws.com/"+  request.body.data.bucket.name + "/" + request.body.data.object.key;
+        }
+    statusString = statusString + objurl;
+
+    https.get(url.parse(objurl), function(res) {
       var data = [];
 
       res.on("data", function(chunk) {

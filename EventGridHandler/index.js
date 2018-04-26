@@ -1,5 +1,5 @@
 
-const http = require("http");
+const https = require("https");
 const { URL } = require("url");
 
 module.exports = function (context, eventGridEvent) {
@@ -33,6 +33,7 @@ module.exports = function (context, eventGridEvent) {
         port: url.port,
         path: url.pathname + '?' + url.searchParams,
         method: 'POST',
+        rejectUnauthorized: false,
         headers: {
             'Content-Type': 'application/cloudevents+json',
             'Content-Length': Buffer.byteLength(jsonCloudEvent)
@@ -41,7 +42,7 @@ module.exports = function (context, eventGridEvent) {
 
     context.log("CloudEvent: " + jsonCloudEvent);
 
-    const req = http.request(post_options, (res) => {
+    const req = https.request(post_options, (res) => {
         // success
         context.log("Status: " + res.statusCode)
         context.done();
@@ -50,7 +51,7 @@ module.exports = function (context, eventGridEvent) {
     req.on('error', (e) => {
         // error
         context.log("Status: " + e)
-        context.done();
+        context.done(e);
     });
 
     // write data to request body
