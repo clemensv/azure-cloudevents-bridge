@@ -1,7 +1,62 @@
-module.exports = function (context, request) {
-    context.log('Webhook was triggered!');
+var Twitter = require("twitter");
+var https = require("https");
+var url = require("url");
 
-    // Check if we got first/last properties
-    context.log("data: " + request.rawBody);
-    context.done();
-}
+module.exports = function(context, request) {
+  var client = new Twitter({
+    consumer_key: process.env["TWITTER_CONSUMER_KEY"],
+    consumer_secret: process.env["TWITTER_CONSUMER_SECRET"],
+    access_token_key: process.env["TWITTER_ACCESS_TOKEN_KEY"],
+    access_token_secret: process.env["TWITTER_ACCESS_TOKEN_SECRET"]
+  });
+
+  var statusString =
+    "Event Type:" + request.body.eventType + "\n" +
+    "Event ID:" + request.body.eventID + "\n" +
+    "Event Time:" + request.body.eventTime + "\n";
+  
+  if (request.body.eventType == "Microsoft.Storage.BlobCreated") {
+    statusString = statusString + request.body.data.url;
+
+    https.get(url.parse(request.body.data.url), function(res) {
+      var data = [];
+
+      res.on("data", function(chunk) {
+          data.push(chunk);
+        })
+        .on("end", function() {
+          //at this point data is an array of Buffers
+          //so Buffer.concat() can make us a new Buffer
+          //of all of them together
+          var buffer = Buffer.concat(data);
+
+          client.post("media/upload", { media: buffer }, function(error, media, response ) {
+            if (!error) {
+              // Lets tweet it
+              var status = {
+                status: statusString,
+                media_ids: media.media_id_string // Pass the media id string
+              };
+
+              client.post("statuses/update", status, function( error, tweet, response ) {
+                if (error) throw error;
+              });
+            } else {
+              if (error) throw error;
+            }
+          });
+        });
+    });
+  } else {
+    client.post(
+      "statuses/update",
+      {
+        status: statusString
+      },
+      function(error, tweet, response) {
+        if (error) throw error;
+      }
+    );
+  }
+  context.done();
+};

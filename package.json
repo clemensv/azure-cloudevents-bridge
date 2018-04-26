@@ -1,7 +1,12 @@
 {
-    "name" : "azure-cloudevents-bridge",
-    "version" : "1.0.0",
+    "name": "azure-cloudevents-bridge",
+    "version": "1.0.0",
     "engines": {
         "node": ">= 8.0.0"
+    },
+    "dependencies": {
+        "azure-storage": "^2.8.2",
+        "flickr-sdk": "^3.7.0",
+        "twitter": "^1.7.1"
     }
 }

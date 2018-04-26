@@ -11,6 +11,8 @@ Publish
 *.Cache
 project.lock.json
 
+/modules
+/node_modules
 /packages
 /TestResults
 
@@ -21,3 +23,4 @@ project.lock.json
 .secrets
 appsettings.json
 local.settings.json
+
