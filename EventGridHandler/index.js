@@ -36,7 +36,7 @@ module.exports = function (context, eventGridEvent) {
         context.log("Forwarding " + eventGridEvent.id + " to " + u);
 
         var post_options = {
-            host: url.host,
+            host: url.hostname,
             port: url.port,
             path: url.pathname + '?' + url.searchParams,
             method: 'POST',
