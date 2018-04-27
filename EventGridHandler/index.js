@@ -33,7 +33,7 @@ module.exports = function (context, eventGridEvent) {
             
         const url = new URL(u);
         
-        context.log("Forwarding " + eventGridEvent.id + " to " + url);
+        context.log("Forwarding " + eventGridEvent.id + " to " + u);
 
         var post_options = {
             host: url.host,
@@ -47,17 +47,15 @@ module.exports = function (context, eventGridEvent) {
             }
         };
 
-        context.log("CloudEvent: " + jsonCloudEvent);
-
         const req = https.request(post_options, (res) => {
             // success
-            context.log("Status: " + res.statusCode)
+            context.log("To: "+ u + " Status: " + res.statusCode);
             complete();
         });
 
         req.on('error', (e) => {
             // error
-            context.log("Status: " + e)
+            context.log("To: "+ u + " Error: " + e);
             complete(e);
         });
 
