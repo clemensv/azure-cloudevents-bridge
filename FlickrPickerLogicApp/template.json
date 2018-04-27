@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workflows_cvflickrpicker_name": {
+            "defaultValue": "cvflickrpicker",
+            "type": "String"
+        },
+        "workflows_cvflickrpicker_id": {
+            "defaultValue": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/cvtest34/providers/Microsoft.Web/sites/cvcloudevents/functions/CopyFileToAzureStorage",
+            "type": "String"
+        },
+        "workflows_cvflickrpicker_id_1": {
+            "defaultValue": "/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/cvtest34/providers/Microsoft.Web/sites/cvcloudevents/functions/PickFlickrPicture",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "comments": "Generalized from resource: '/subscriptions/326100e2-f69d-4268-8503-075374f62b6e/resourceGroups/cvflickrpicker/providers/Microsoft.Logic/workflows/cvflickrpicker'.",
+            "type": "Microsoft.Logic/workflows",
+            "name": "[parameters('workflows_cvflickrpicker_name')]",
+            "apiVersion": "2017-07-01",
+            "location": "northeurope",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "state": "Enabled",
+                "definition": {
+                    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+                    "contentVersion": "1.0.0.0",
+                    "parameters": {},
+                    "triggers": {
+                        "Recurrence": {
+                            "recurrence": {
+                                "frequency": "Minute",
+                                "interval": 2
+                            },
+                            "type": "Recurrence"
+                        }
+                    },
+                    "actions": {
+                        "CopyFileToAzureStorage": {
+                            "runAfter": {
+                                "PickFlickrPicture": [
+                                    "Succeeded"
+                                ]
+                            },
+                            "type": "Function",
+                            "inputs": {
+                                "body": "@body('PickFlickrPicture')",
+                                "function": {
+                                    "id": "[parameters('workflows_cvflickrpicker_id')]"
+                                },
+                                "method": "POST"
+                            }
+                        },
+                        "PickFlickrPicture": {
+                            "runAfter": {},
+                            "type": "Function",
+                            "inputs": {
+                                "function": {
+                                    "id": "[parameters('workflows_cvflickrpicker_id_1')]"
+                                }
+                            }
+                        }
+                    },
+                    "outputs": {}
+                },
+                "parameters": {}
+            },
+            "dependsOn": []
+        }
+    ]
+}
