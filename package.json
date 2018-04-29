@@ -5,8 +5,10 @@
         "node": ">= 8.0.0"
     },
     "dependencies": {
+        "azure-cognitiveservices-vision": "^1.0.0-preview",
         "azure-storage": "^2.8.2",
         "flickr-sdk": "^3.7.0",
+        "ms-rest-azure": "^2.5.5",
         "twitter": "^1.7.1"
     }
 }

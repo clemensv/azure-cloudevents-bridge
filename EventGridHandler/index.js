@@ -23,9 +23,9 @@ module.exports = function (context, eventGridEvent) {
     var jsonCloudEvent = JSON.stringify(cloudEvent);
 
     var nreq = urls.length;
-    var complete = function(e) {
+    var complete = function() {
         if ( --nreq == 0) {
-            context.done(e);
+            context.done();
         }
     }
 
@@ -50,17 +50,17 @@ module.exports = function (context, eventGridEvent) {
         const req = https.request(post_options, (res) => {
             // success
             context.log("To: "+ u + " Status: " + res.statusCode);
-            complete();
         });
+        
 
         req.on('error', (e) => {
             // error
             context.log("To: "+ u + " Error: " + e);
-            complete(e);
         });
 
         // write data to request body
         req.write(jsonCloudEvent);
         req.end();
+        complete();
     });    
 };
