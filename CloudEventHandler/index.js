@@ -28,15 +28,19 @@ module.exports = function(context, request) {
     "Time: " + request.body.eventTime + "\n";
   
   context.log("Event received: " + request.body.eventType + ", " + request.body.eventTime);
+  context.log("Event received: " + JSON.stringify(request));
 
   if (request.body.eventType == "Microsoft.Storage.BlobCreated" || 
-      request.body.eventType == "aws.s3.object.created") {
+      request.body.eventType == "aws.s3.object.created" || 
+      request.body.eventType == "google.storage.object.finalized") {
 
         // we're assuming these are pics
         var objurl = "";
 
         if ( request.body.eventType == "Microsoft.Storage.BlobCreated") {
           objurl = request.body.data.url;
+        } else if (request.body.eventType == "google.storage.object.finalized") {
+          objurl = request.body.data.mediaLink;
         } else { // aws case
           objurl = "https://s3.amazonaws.com/"+  request.body.data.bucket.name + "/" + request.body.data.object.key;
         }
