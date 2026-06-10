@@ -6,7 +6,7 @@
     },
     "dependencies": {
         "azure-cognitiveservices-vision": "^1.0.0-preview",
-        "azure-storage": "^2.8.2",
+        "azure-storage": "^2.10.7",
         "flickr-sdk": "^3.7.0",
         "ms-rest-azure": "^2.5.5",
         "twitter": "^1.7.1"
