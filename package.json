@@ -8,7 +8,7 @@
         "azure-cognitiveservices-vision": "^1.0.0-preview",
         "azure-storage": "^2.8.2",
         "flickr-sdk": "^3.7.0",
-        "ms-rest-azure": "^2.6.2",
+        "ms-rest-azure": "^3.0.0",
         "twitter": "^1.7.1"
     }
 }
